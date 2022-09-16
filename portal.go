@@ -2840,13 +2840,7 @@ func (portal *Portal) convertWebPtoPNG(webpImage []byte) ([]byte, error) {
 
 	return pngBuffer.Bytes(), nil
 }
-func (portal *Portal) convertAudioToOpus(data []byte) ([]byte, error) {
-	data, err := ffmpeg.ConvertBytes(ctx, data, ".ogg", []string{}, []string{
-            "-map", "0", "-map_metadata", "0:s:0" ,"-c:a","libopus",
-        }, content.GetInfo().MimeType)
-        content.Info.MimeType = "audio/ogg"
-	return data, err
-}
+
 type PaddedImage struct {
 	image.Image
 	Size    int
@@ -2974,10 +2968,10 @@ func (portal *Portal) preprocessMatrixMedia(ctx context.Context, sender *User, r
 			// Hopefully it's opus already
 			content.Info.MimeType = "audio/ogg; codecs=opus"
 		default:
-			data, err = portal.convertAudioToOpus(data)
-			if err != nil {
-				return nil, fmt.Errorf("Error converting Audio to Opus format")
-			}
+			data, convertErr = ffmpeg.ConvertBytes(ctx, data, ".ogg", []string{}, []string{
+			    "-map", "0", "-map_metadata", "0:s:0" ,"-c:a","libopus",
+			}, content.GetInfo().MimeType)
+			content.Info.MimeType = "audio/ogg"
 		}
 	case mediaType == whatsmeow.MediaDocument:
 		// Everything is allowed
