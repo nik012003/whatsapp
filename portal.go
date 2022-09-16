@@ -2840,7 +2840,7 @@ func (portal *Portal) convertWebPtoPNG(webpImage []byte) ([]byte, error) {
 
 	return pngBuffer.Bytes(), nil
 }
-func (portal *Portal) convertAudioToOpus(data []byte ([]byte) {
+func (portal *Portal) convertAudioToOpus(data []byte) ([]byte) {
         data, err = ffmpeg.ConvertBytes(ctx, data, ".ogg", []string{}, []string{
             "-map", "0", "-map_metadata", "0:s:0" ,"-c:a","libopus",
         }, content.GetInfo().MimeType)
